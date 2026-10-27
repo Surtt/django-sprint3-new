@@ -1,12 +1,14 @@
+from core.constants import MAX_TITLE_LENGTH
+from core.models import PublishedModel, TitleModel
 from django.contrib.auth import get_user_model
 from django.db import models
-from core.models import PublishedModel
+
+from .querysets import PostQuerySet
 
 User = get_user_model()
 
 
-class Category(PublishedModel):
-    title = models.CharField(max_length=256, verbose_name='Заголовок')
+class Category(PublishedModel, TitleModel):
     description = models.TextField(verbose_name='Описание')
     slug = models.SlugField(
         unique=True,
@@ -21,12 +23,11 @@ class Category(PublishedModel):
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
-    def __str__(self):
-        return self.title
-
 
 class Location(PublishedModel):
-    name = models.CharField(max_length=256, verbose_name='Название места')
+    name = models.CharField(
+        max_length=MAX_TITLE_LENGTH, verbose_name='Название места'
+    )
 
     class Meta:
         verbose_name = 'местоположение'
@@ -36,8 +37,7 @@ class Location(PublishedModel):
         return self.name
 
 
-class Post(PublishedModel):
-    title = models.CharField(max_length=256, verbose_name='Заголовок')
+class Post(PublishedModel, TitleModel):
     text = models.TextField(verbose_name='Текст')
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
@@ -63,9 +63,10 @@ class Post(PublishedModel):
         verbose_name='Категория',
     )
 
+    objects = PostQuerySet.as_manager()
+
     class Meta:
+        default_related_name = 'posts'
+        ordering = ['-pub_date']
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
-
-    def __str__(self):
-        return self.title

@@ -1,4 +1,5 @@
 from django.db import models
+from core.constants import MAX_TITLE_LENGTH
 
 
 class PublishedModel(models.Model):
@@ -16,3 +17,17 @@ class PublishedModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class TitleModel(models.Model):
+    """Абстрактная модель. Добавляет поле title"""
+
+    title = models.CharField(
+        max_length=MAX_TITLE_LENGTH, verbose_name='Заголовок'
+    )
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.title
